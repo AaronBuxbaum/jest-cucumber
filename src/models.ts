@@ -39,6 +39,7 @@ export type ParsedScenarioOutline = {
 
 export type ParsedFeature = {
     title: string;
+    backgrounds: ParsedScenario[];
     scenarios: ParsedScenario[];
     scenarioOutlines: ParsedScenarioOutline[];
     options: Options;

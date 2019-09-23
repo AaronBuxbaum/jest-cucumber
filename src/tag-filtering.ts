@@ -80,6 +80,7 @@ export const applyTagFilters = (
         return parsedFeature;
     }
 
+    const backgrounds = parsedFeature.backgrounds.map((scenario) => setScenarioSkipped(parsedFeature, scenario));
     const scenarios = parsedFeature.scenarios.map((scenario) => setScenarioSkipped(parsedFeature, scenario));
     const scenarioOutlines = parsedFeature.scenarioOutlines
         .map((scenarioOutline) => {
@@ -91,6 +92,7 @@ export const applyTagFilters = (
 
     return {
         ...parsedFeature,
+        backgrounds,
         scenarios,
         scenarioOutlines,
     } as ParsedFeature;

@@ -163,6 +163,12 @@ const parseScenarioOutline = (astScenarioOutline: any) => {
     } as ParsedScenarioOutline;
 };
 
+const parseBackgrounds = (astFeature: any) => {
+    return astFeature.children
+        .filter((child: any) => child.type === 'Background')
+        .map((astScenario: any) => parseScenario(astScenario));
+}
+
 const parseScenarios = (astFeature: any) => {
     return astFeature.children
         .filter((child: any) => child.type === 'Scenario')
@@ -188,6 +194,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
 
     return {
         title: astFeature.name,
+        backgrounds: parseBackgrounds(astFeature),
         scenarios: parseScenarios(astFeature),
         scenarioOutlines: parseScenarioOutlines(astFeature),
         tags: parseTags(astFeature),

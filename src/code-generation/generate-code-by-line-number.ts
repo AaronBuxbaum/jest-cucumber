@@ -1,8 +1,9 @@
 import { ParsedFeature } from '../models';
-import { generateScenarioCodeWithSeparateStepFunctions, generateScenarioCode } from './scenario-generation';
+import { generateBackgroundCode, generateScenarioCodeWithSeparateStepFunctions, generateScenarioCode } from './scenario-generation';
 import { generateStepCode } from './step-generation';
 
 export enum ObjectTypeEnum {
+    background,
     scenario,
     scenarioOutline,
     step,
@@ -43,6 +44,20 @@ const findObjectByLineNumber = (
         });
     });
 
+    feature.backgrounds.forEach((background) => {
+        if (background.lineNumber === lineNumber) {
+            found = background;
+            type = ObjectTypeEnum.background;
+        }
+
+        background.steps.forEach((step, index) => {
+            if (step.lineNumber === lineNumber) {
+                found = { steps: background.steps, index };
+                type = ObjectTypeEnum.step;
+            }
+        });
+    });
+
     return found ? { object: found, type } : null;
 };
 
@@ -56,6 +71,8 @@ export const generateCodeFromFeature = (
         return null;
     } else {
         switch (objectAtLine.type) {
+            case ObjectTypeEnum.background:
+                return generateBackgroundCode(objectAtLine.object);
             case ObjectTypeEnum.scenario:
             case ObjectTypeEnum.scenarioOutline:
                 return generateScenarioCode(objectAtLine.object);

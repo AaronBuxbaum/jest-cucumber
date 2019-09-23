@@ -2,9 +2,9 @@ import { ParsedScenario, ParsedScenarioOutline } from '../models';
 import { generateStepCode, generateStepFunctionCall } from './step-generation';
 import { indent } from './utils';
 
-const scenarioTemplate = (scenarioTitle: string, steps: string, stepKeywords: string[]) => {
+const scenarioTemplate = (scenarioTitle: string, steps: string, stepKeywords: string[], functionName = 'test') => {
     // tslint:disable-next-line:max-line-length
-    return `test('${scenarioTitle.replace(/'+/g, `\\'`)}', ({ ${stepKeywords.join(', ')} }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
+    return `${functionName}('${scenarioTitle.replace(/'+/g, `\\'`)}', ({ ${stepKeywords.join(', ')} }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
 };
 
 const getStepKeywords = (scenario: ParsedScenario | ParsedScenarioOutline) => {
@@ -17,6 +17,13 @@ const getStepKeywords = (scenario: ParsedScenario | ParsedScenarioOutline) => {
     });
 
     return stepKeywords;
+};
+
+export const generateBackgroundCode = (scenario: ParsedScenario) => {
+    const stepsCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index));
+    const stepKeywords = getStepKeywords(scenario);
+
+    return scenarioTemplate(scenario.title, stepsCode.join('\n\n'), stepKeywords, 'beforeEach');
 };
 
 export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {
